@@ -5,8 +5,8 @@ from typing import Any
 import numpy as np
 import pytest
 
-from mdistnn.data_config import dict_config_test, dict_config_train
-from mdistnn.mnist_data_loader import MNISTDataLoader
+from mnistnn.data_config import dict_config_test, dict_config_train
+from mnistnn.mnist_data_loader import MNISTDataLoader
 
 
 class TestMNISTDataLoader:
