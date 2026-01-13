@@ -4,6 +4,7 @@
 # ======================================================
 
 .PHONY: help format format-check lint lint-fix typecheck qa clean install
+.PHONY: run-tests-init
 
 # Default target - show help
 help:
@@ -16,6 +17,9 @@ help:
 	@echo "  make qa            - Run all quality checks (format + lint-fix + typecheck)"
 	@echo "  make clean         - Remove cache directories and temporary files"
 	@echo "  make install       - Install development dependencies"
+	@echo "  make run-tests-init- - Run the test package __init__.py directly"
+	@echo "  make help          - Show this help message"
+
 
 # Format code with Black
 format:
@@ -67,3 +71,10 @@ install:
 	@echo "📦 Installing development dependencies..."
 	pip install -r requirements.txt
 	@echo "✅ Installation complete!"
+
+
+# Run the test package __init__.py directly (for quick ad-hoc testing)
+run-tests-init:
+	@echo "▶ Running src/tests/__init__.py..."
+	python -u src/tests/__init__.py
+	@echo "✅ Run complete"

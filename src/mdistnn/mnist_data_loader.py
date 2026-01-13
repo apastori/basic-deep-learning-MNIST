@@ -1,33 +1,42 @@
-from typing import Dict, Union
-import numpy as np # linear algebra
 import os
+
+import numpy as np  # linear algebra
 
 #
 # MNIST Data Loader Class
-#   
-class MNISTDataLoader(object):
+#
+class MNISTDataLoader:
     """Class to load MNIST dataset from given file paths."""
-    def __init__(self, 
-                dict_config_train: dict[str, str],
-                dict_config_test: dict[str, str]) -> None:
+
+    def __init__(
+        self,
+        dict_config_train: dict[str, str],
+        dict_config_test: dict[str, str],
+    ) -> None:
         # Initialize file paths from configuration dictionaries
         self.training_input: dict[str, str] = {
             'labels_path': dict_config_train['training_labels_filepath'],
-            'images_path': dict_config_train['training_images_filepath']
+            'images_path': dict_config_train['training_images_filepath'],
         }
         self.test_input: dict[str, str] = {
             'labels_path': dict_config_test['test_labels_filepath'],
-            'images_path': dict_config_test['test_images_filepath']
+            'images_path': dict_config_test['test_images_filepath'],
         }
         # Check if file paths exist
         self._validate_file_paths()
         # Store Training data
-        self.training_info: tuple[Dict[str, Union[str, int, np.ndarray]], Dict[str, Union[str, int, np.ndarray]]] = self._load_train_data()
+        self.training_info: tuple[
+            dict[str, str | int | np.ndarray],
+            dict[str, str | int | np.ndarray],
+        ] = self._load_train_data()
         # Store Test data
-        self.test_info: tuple[Dict[str, Union[str, int, np.ndarray]], Dict[str, Union[str, int, np.ndarray]]] = self._load_test_data()
-
+        self.test_info: tuple[
+            dict[str, str | int | np.ndarray],
+            dict[str, str | int | np.ndarray],
+        ] = self._load_test_data()
 
     """Validate the existence of the MNIST data files."""
+
     # Private method to validate file paths
     # Do not call this method directly from outside the class
     def _validate_file_paths(self):
@@ -35,23 +44,32 @@ class MNISTDataLoader(object):
         # Training first
         for name, path in self.training_input.items():
             if not os.path.exists(path):
-                raise FileNotFoundError(f"Training {name.replace('_path', '')} file not found: {path}")
+                raise FileNotFoundError(
+                    f"Training {name.replace('_path', '')} file not found: {path}"
+                )
 
         # Then test
         for name, path in self.test_input.items():
             if not os.path.exists(path):
-                raise FileNotFoundError(f"Test {name.replace('_path', '')} file not found: {path}")
-            
+                raise FileNotFoundError(
+                    f"Test {name.replace('_path', '')} file not found: {path}"
+                )
+
     """Read labels from MNIST files."""
+
     # Private method to validate file paths
     # Do not call this method directly from outside the class
-    def _read_labels(self, labels_filepath: str) -> Dict[str, Union[str, int, np.ndarray]]:
+    def _read_labels(
+        self, labels_filepath: str
+    ) -> dict[str, str | int | np.ndarray]:
         labels: list[int] = []
         with open(labels_filepath, "rb") as f:
             # Read and validate magic number header
             magic_number: int = int.from_bytes(f.read(4), "big")
             if magic_number != 2049:
-                raise ValueError(f"Invalid label file magic number: {magic_number}")
+                raise ValueError(
+                    f"Invalid label file magic number: {magic_number}"
+                )
             # Read number of labels header
             num_labels: int = int.from_bytes(f.read(4), "big")
             # Read label data, each label is a single digit between 0 and 9
@@ -62,23 +80,28 @@ class MNISTDataLoader(object):
                 labels.append(int(byte))
             if len(labels) != num_labels:
                 raise ValueError("Label count does not match header")
-        labels_dict: Dict[str, Union[str, int, np.ndarray]] = {
+        labels_dict: dict[str, str | int | np.ndarray] = {
             "type": "labels",
             "num_labels": num_labels,
-            "labels": np.array(labels)
+            "labels": np.array(labels),
         }
         return labels_dict
-    
+
     """Read images from MNIST files."""
+
     # Private method to validate file paths
     # Do not call this method directly from outside the class
-    def _read_images(self, images_filepath: str) -> Dict[str, Union[str, int, np.ndarray]]:
+    def _read_images(
+        self, images_filepath: str
+    ) -> dict[str, str | int | np.ndarray]:
         images: list[np.ndarray] = []
         with open(images_filepath, "rb") as f:
             # Read and validate magic number header
             magic_number: int = int.from_bytes(f.read(4), "big")
             if magic_number != 2051:
-                raise ValueError(f"Invalid image file magic number: {magic_number}")
+                raise ValueError(
+                    f"Invalid image file magic number: {magic_number}"
+                )
             # Read number of images header
             num_images: int = int.from_bytes(f.read(4), "big")
             # Read number of rows and columns per image
@@ -102,42 +125,81 @@ class MNISTDataLoader(object):
                     raise ValueError("Invalid image size, expected 784 pixels")
                 image: list[list[int]] = []
                 for r in range(rows):
-                    row: list[int] = flat[r * cols:(r + 1) * cols]
+                    row: list[int] = flat[r * cols : (r + 1) * cols]
                     image.append(row)
                 images.append(np.array(image))
-        images_dict: Dict[str, Union[str, int, list[int]]] = {
+        images_dict: dict[str, str | int | list[int]] = {
             "type": "images",
             "num_images": num_images,
             "rows": rows,
             "cols": cols,
-            "images": np.array(images)
+            "images": np.array(images),
         }
         return images_dict
 
     """Read images and labels from MNIST files."""
+
     # Private method to validate file paths
     # Do not call this method directly from outside the class
-    def _read_images_labels(self, images_filepath: str, labels_filepath: str) -> tuple[Dict[str, Union[str, int, np.ndarray]], Dict[str, Union[str, int, np.ndarray]]]:
-        images_dict: Dict[str, Union[str, int, np.ndarray]] = self._read_images(images_filepath)
-        labels_dict: Dict[str, Union[str, int, np.ndarray]] = self._read_labels(labels_filepath)
+    def _read_images_labels(
+        self, images_filepath: str, labels_filepath: str
+    ) -> tuple[
+        dict[str, str | int | np.ndarray],
+        dict[str, str | int | np.ndarray],
+    ]:
+        images_dict: dict[str, str | int | np.ndarray] = (
+            self._read_images(images_filepath)
+        )
+        labels_dict: dict[str, str | int | np.ndarray] = (
+            self._read_labels(labels_filepath)
+        )
         if images_dict["num_images"] != labels_dict["num_labels"]:
-            raise ValueError("Number of images does not match number of labels")
+            raise ValueError(
+                "Number of images does not match number of labels"
+            )
         return (images_dict, labels_dict)
-        
-    
+
     """Load training data from MNIST files."""
+
     # Private method to validate file paths
     # Do not call this method directly from outside the class
-    def _load_train_data(self) -> tuple[Dict[str, Union[str, int, np.ndarray]], Dict[str, Union[str, int, np.ndarray]]]:
-        return self.read_images_labels(self.training_input['images_path'], self.training_input['labels_path'])
-    
+    def _load_train_data(
+        self,
+    ) -> tuple[
+        dict[str, str | int | np.ndarray],
+        dict[str, str | int | np.ndarray],
+    ]:
+        return self._read_images_labels(
+            self.training_input['images_path'],
+            self.training_input['labels_path'],
+        )
+
     """Load test data from MNIST files."""
+
     # Private method to validate file paths
     # Do not call this method directly from outside the class
-    def _load_test_data(self) -> tuple[Dict[str, Union[str, int, np.ndarray]], Dict[str, Union[str, int, np.ndarray]]]:
-        return self._read_images_labels(self.test_input['images_path'], self.test_input['labels_path'])
+    def _load_test_data(
+        self,
+    ) -> tuple[
+        dict[str, str | int | np.ndarray],
+        dict[str, str | int | np.ndarray],
+    ]:
+        return self._read_images_labels(
+            self.test_input['images_path'], self.test_input['labels_path']
+        )
 
-    """Load both training and test data from MNIST files."""  
-    def show_data(self) -> tuple[tuple[Dict[str, Union[str, int, np.ndarray]], Dict[str, Union[str, int, np.ndarray]]], tuple[Dict[str, Union[str, int, np.ndarray]], Dict[str, Union[str, int, np.ndarray]]]]:
+    """Load both training and test data from MNIST files."""
+
+    def show_data(
+        self,
+    ) -> tuple[
+        tuple[
+            dict[str, str | int | np.ndarray],
+            dict[str, str | int | np.ndarray],
+        ],
+        tuple[
+            dict[str, str | int | np.ndarray],
+            dict[str, str | int | np.ndarray],
+        ],
+    ]:
         return (self.training_info, self.test_info)
-
