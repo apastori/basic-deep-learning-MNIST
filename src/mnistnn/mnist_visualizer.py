@@ -23,17 +23,19 @@ class MNISTVisualizer:
         title: str = "MNIST Images Grid",
     ) -> None:
         """Plot multiple MNIST images in a grid."""
+        num_images = min(num_images, len(images))
+
         grid_size: int = int(np.ceil(np.sqrt(num_images)))
         fig, axes = plt.subplots(grid_size, grid_size, figsize=(10, 10))
         axes = axes.flatten()
 
-        for i in range(num_images):
-            if i < len(images):
-                axes[i].imshow(images[i], cmap="gray")
-                axes[i].set_title(f"Label: {labels[i]}")
-                axes[i].axis("off")
+        for i, ax in enumerate(axes):
+            if i < num_images:
+                ax.imshow(images[i], cmap="gray")
+                ax.set_title(f"Label: {labels[i]}")
+                ax.axis("off")
             else:
-                axes[i].axis("off")
+                ax.axis("off")
 
         fig.suptitle(title)
         plt.tight_layout()
