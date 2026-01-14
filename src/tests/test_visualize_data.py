@@ -2,6 +2,7 @@
 
 import numpy as np
 import pytest
+from typing import Tuple
 
 from mnistnn.data_config import dict_config_test, dict_config_train
 from mnistnn.mnist_data_loader import MNISTDataLoader
@@ -22,25 +23,33 @@ class TestMNISTVisualizer:
     @pytest.fixture
     def training_data(self, data_loader: MNISTDataLoader) -> tuple[np.ndarray, np.ndarray]:
         """Retrieve training images and labels."""
+        train_images: dict[str, str | int | np.ndarray]
+        train_labels: dict[str, str | int | np.ndarray]
         train_images, train_labels = data_loader.training_info
-        return train_images["images"], train_labels["labels"]
+        images_array: np.ndarray = train_images["images"]
+        labels_array: np.ndarray = train_labels["labels"]
+        return images_array, labels_array
 
-    def test_plot_single_image(self, training_data: tuple[np.ndarray, np.ndarray]) -> None:
+    def test_plot_single_image(self, training_data: Tuple[np.ndarray, np.ndarray]) -> None:
         """Test that plotting a single image does not raise errors."""
+        images_array: np.ndarray
+        labels_array: np.ndarray
         images_array, labels_array = training_data
         try:
             MNISTVisualizer.plot_single_image(images_array[0], labels_array[0])
         except Exception as e:
             raise AssertionError(f"Plotting single image raised an exception: {e}")
         
-    def test_plot_20_random_images_grid(self, training_data: tuple[np.ndarray, np.ndarray]) -> None:
+    def test_plot_random_images_grid(self, training_data: Tuple[np.ndarray, np.ndarray]) -> None:
         """Test that plotting a grid of 20 random MNIST images does not raise errors."""
+        images_array: np.ndarray
+        labels_array: np.ndarray
         images_array, labels_array = training_data
-        rng = np.random.default_rng(seed=42)
-        indices = rng.choice(len(images_array), size=20, replace=False)
+        rng: np.random.Generator = np.random.default_rng(seed=42)
+        indices: np.ndarray = rng.choice(len(images_array), size=20, replace=False)
 
-        random_images = images_array[indices]
-        random_labels = labels_array[indices]
+        random_images: np.ndarray = images_array[indices]
+        random_labels: np.ndarray = labels_array[indices]
 
         try:
             MNISTVisualizer.plot_grid(

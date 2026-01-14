@@ -1,5 +1,7 @@
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+from typing import Tuple
 
 class MNISTVisualizer:
     """Utility class for visualizing MNIST data."""
@@ -23,11 +25,12 @@ class MNISTVisualizer:
         title: str = "MNIST Images Grid",
     ) -> None:
         """Plot multiple MNIST images in a grid."""
-        num_images = min(num_images, len(images))
-
+        num_images: int = min(num_images, len(images))
         grid_size: int = int(np.ceil(np.sqrt(num_images)))
+        fig: matplotlib.figure.Figure
+        axes: np.ndarray
         fig, axes = plt.subplots(grid_size, grid_size, figsize=(10, 10))
-        axes = axes.flatten()
+        axes: np.ndarray = axes.flatten()
 
         for i, ax in enumerate(axes):
             if i < num_images:
