@@ -12,9 +12,9 @@ class WeightMultiply(ParamOperation):
         """Compute output."""
         return np.dot(self.input_, self.param)
 
-    def _input_grad(self, output_grad: np.ndarray) -> np.ndarray:
+    def _input_grad(self, grad: np.ndarray) -> np.ndarray:
         """Compute input gradient."""
-        return np.dot(output_grad, np.transpose(self.param, (1, 0)))
+        return np.dot(grad, np.transpose(self.param, (1, 0)))
 
     def _param_grad(self, output_grad: np.ndarray) -> np.ndarray:
         """Compute parameter gradient."""

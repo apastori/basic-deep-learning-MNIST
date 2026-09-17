@@ -17,11 +17,11 @@ class BiasAdd(ParamOperation):
         """Compute Output."""
         return self.input_ + self.param
         
-    def _input_grad(self, output_grad: np.ndarray) -> np.ndarray:
+    def _input_grad(self, grad: np.ndarray) -> np.ndarray:
         """Compute input gradient."""
-        return np.ones_like(self.input_) * output_grad
+        return np.ones_like(self.input_) * grad
 
-    def _param_grad(self, output_grad: np.ndarray) -> np.ndarray:
+    def _param_grad(self, grad: np.ndarray) -> np.ndarray:
         """Compute parameter gradient."""
-        param_grad = np.ones_like(self.param) * output_grad
+        param_grad = np.ones_like(self.param) * grad
         return np.sum(param_grad, axis=0).reshape(1, param_grad.shape[1])

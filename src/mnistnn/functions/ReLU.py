@@ -6,14 +6,14 @@ class ReLU(Operation):
     """ReLU activation function"""
     
     """Forward Pass during Prediction"""
-    def _output(self, x: np.ndarray) -> np.ndarray:
+    def _output(self) -> np.ndarray:
         ## value saved in Output through forward function in Operation class
-        return np.maximum(0, x)
+        return np.maximum(0, self.input_)
     
     """Backward Pass during Training"""
     def _input_grad(self, grad: np.ndarray) -> np.ndarray:
          # 1. Create a mask where ReLU was active
-        relu_mask: np.ndarray = self.x > 0
+        relu_mask: np.ndarray = self.input_ > 0
 
         # 2. Convert boolean mask to numeric form
         relu_derivative: np.ndarray = relu_mask.astype(grad.dtype)
