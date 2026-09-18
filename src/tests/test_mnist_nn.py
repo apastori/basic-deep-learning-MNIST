@@ -2,6 +2,7 @@
 
 import pytest
 
+
 class TestMDISTNeuralNetwork:
     """Test suite for MDIST Neural Network class."""
 
