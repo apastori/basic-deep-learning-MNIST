@@ -1,24 +1,25 @@
-import numpy as np
 from abc import ABC, abstractmethod
+
+import numpy as np
+
 from mnistnn.utils.shape import assert_same_shape
+
 
 class Operation(ABC):
     """Base class for operations"""
-  
-    def forward(self, input_: np.ndarray):
-        '''
-        Stores input in the self._input instance variable
+
+    def forward(self, input_: np.ndarray) -> np.ndarray:
+        """Stores input in the self._input instance variable
         Calls the self._output() function.
-        '''
+        """
         self.input_ = input_
         self.output = self._output()
         return self.output
-        
+
     def backward(self, output_grad: np.ndarray) -> np.ndarray:
-        '''
-        Calls the self._input_grad() function.
+        """Calls the self._input_grad() function.
         Checks that the appropriate shapes match.
-        '''
+        """
         ## Check that the output gradient has the same shape as the output
         assert_same_shape(self.output, output_grad)
         self.input_grad = self._input_grad(output_grad)
@@ -27,7 +28,7 @@ class Operation(ABC):
         return self.input_grad
 
     @abstractmethod
-    def _output(self, x: np.ndarray) -> np.ndarray:
+    def _output(self) -> np.ndarray:
         raise NotImplementedError
 
     @abstractmethod

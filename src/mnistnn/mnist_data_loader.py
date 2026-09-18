@@ -2,6 +2,7 @@ import os
 
 import numpy as np  # linear algebra
 
+
 #
 # MNIST Data Loader Class
 #

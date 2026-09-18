@@ -1,7 +1,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import Tuple
+
 
 class MNISTVisualizer:
     """Utility class for visualizing MNIST data."""
