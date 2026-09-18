@@ -21,9 +21,9 @@ class Layer(LayerParent):
         if activation is None:
             raise ValueError("Activation function must be provided.")
         self.linear: Linear = Linear(input_size, output_size)
-        self.activation: Operation = activation
+        self.activation: Operation | None = activation
         # Store the output of the linear layer for backward pass
-        self.linear_output: np.ndarray = None
+        self.linear_output: np.ndarray | None = None
 
     def forward(self, input_: np.ndarray) -> np.ndarray:
         """Compute the layer output for the given input."""
@@ -38,10 +38,10 @@ class Layer(LayerParent):
             output_grad = self.activation.backward(output_grad)
         return self.linear.backward(output_grad)
 
-    def get_params(self):
+    def get_params(self) -> tuple[np.ndarray, np.ndarray]:
         """Return the layer weights and bias."""
         return self.linear.weights, self.linear.bias
 
-    def get_grads(self):
+    def get_grads(self) -> tuple[np.ndarray, np.ndarray]:
         """Return gradients for the layer weights and bias."""
         return self.linear.grad_weights, self.linear.grad_bias

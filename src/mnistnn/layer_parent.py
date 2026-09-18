@@ -19,11 +19,11 @@ class LayerParent(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_params(self) -> np.ndarray:
+    def get_params(self) -> tuple[np.ndarray, ...]:
         """Return the parameters used by the layer."""
         raise NotImplementedError
 
     @abstractmethod
-    def _param_grads(self) -> np.ndarray:
+    def get_grads(self) -> tuple[np.ndarray, ...]:
         """Return gradients for the layer parameters."""
         raise NotImplementedError

@@ -50,21 +50,21 @@ class GenericLayer(LayerParent):
         for operation in reversed(self.operations):
             output_grad = operation.backward(output_grad)
             input_grad = output_grad
-        self._param_grads()
+        self.get_grads()
         return input_grad
 
-    def _param_grads(self) -> np.ndarray:
+    def get_grads(self) -> tuple[np.ndarray, ...]:
         """Extract the _param_grads from the layer's operations."""
-        self.param_grads = []
+        self.param_grads: list[np.ndarray] = []
         for operation in self.operations:
             if issubclass(operation.__class__, ParamOperation):
                 self.param_grads.append(operation.param_grad)
-        return self.param_grads
+        return tuple(self.param_grads)
 
-    def _params(self) -> np.ndarray:
+    def get_params(self) -> tuple[np.ndarray, ...]:
         """Extract the _params from the layer's operations."""
-        self.params = []
+        self.params: list[np.ndarray] = []
         for operation in self.operations:
             if issubclass(operation.__class__, ParamOperation):
                 self.params.append(operation.param)
-        return self.params
+        return tuple(self.params)
