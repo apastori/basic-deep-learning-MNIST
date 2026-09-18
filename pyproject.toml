@@ -6,7 +6,7 @@ skip-string-normalization = true  # <-- keeps single quotes
 [tool.ruff]
 line-length = 79  # Match Black's line length
 target-version = "py313"
-fix = true
+fix = false
 exclude = [".venv", "build", "dist", "__pycache__", ".git"]
 output-format = "full"  # Detailed output for better debugging
 

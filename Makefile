@@ -35,7 +35,7 @@ format-check:
 # Lint with Ruff (check only, no fixes)
 lint:
 	@echo "🔍 Linting code with Ruff..."
-	ruff check .
+	ruff check . --no-fix
 
 # Lint with Ruff and auto-fix issues
 lint-fix:
