@@ -1,3 +1,5 @@
+"""Provide the sigmoid activation operation."""
+
 import numpy as np
 
 from mnistnn.operation import Operation  # type: ignore # Corrected module path

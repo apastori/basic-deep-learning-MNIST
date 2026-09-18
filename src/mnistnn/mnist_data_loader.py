@@ -1,3 +1,5 @@
+"""Load images and labels from MNIST binary data files."""
+
 import os
 
 import numpy as np  # linear algebra
@@ -14,6 +16,7 @@ class MNISTDataLoader:
         dict_config_train: dict[str, str],
         dict_config_test: dict[str, str],
     ) -> None:
+        """Initialize the loader with training and test file paths."""
         # Initialize file paths from configuration dictionaries
         self.training_input: dict[str, str] = {
             'labels_path': dict_config_train['training_labels_filepath'],
@@ -203,4 +206,5 @@ class MNISTDataLoader:
             dict[str, str | int | np.ndarray],
         ],
     ]:
+        """Return the loaded training and test data."""
         return (self.training_info, self.test_info)

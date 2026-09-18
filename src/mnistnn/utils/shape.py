@@ -1,3 +1,5 @@
+"""Provide array-shape validation helpers."""
+
 import numpy as np
 
 

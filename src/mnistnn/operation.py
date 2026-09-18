@@ -1,3 +1,5 @@
+"""Define the abstract operation interface for neural-network computations."""
+
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -9,7 +11,8 @@ class Operation(ABC):
     """Base class for operations."""
 
     def forward(self, input_: np.ndarray) -> np.ndarray:
-        """Stores input in the self._input instance variable
+        """Store input in the self._input instance variable.
+
         Calls the self._output() function.
         """
         self.input_ = input_
@@ -17,7 +20,8 @@ class Operation(ABC):
         return self.output
 
     def backward(self, output_grad: np.ndarray) -> np.ndarray:
-        """Calls the self._input_grad() function.
+        """Call the self._input_grad() function.
+
         Checks that the appropriate shapes match.
         """
         ## Check that the output gradient has the same shape as the output

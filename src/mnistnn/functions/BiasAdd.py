@@ -1,3 +1,5 @@
+"""Provide the bias-addition operation."""
+
 import numpy as np
 
 from mnistnn.operation_param import ParamOperation
@@ -7,7 +9,8 @@ class BiasAdd(ParamOperation):
     """Compute bias addition."""
 
     def __init__(self, bias: np.ndarray) -> None:
-        """Initialize Operation with self.param = bias.
+        """Initialize the operation with self.param = bias.
+
         Check appropriate shape.
         """
         assert bias.shape[0] == 1

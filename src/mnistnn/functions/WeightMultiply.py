@@ -1,3 +1,5 @@
+"""Provide the parameterized weight-multiplication operation."""
+
 import numpy as np
 
 from mnistnn.operation_param import ParamOperation
@@ -7,7 +9,7 @@ class WeightMultiply(ParamOperation):
     """Weight multiplication operation for a neural network."""
 
     def __init__(self, weights: np.ndarray):
-        ## Initialize Operation with self.param = weights.
+        """Initialize the operation with the supplied weights."""
         super().__init__(weights)
 
     def _output(self) -> np.ndarray:

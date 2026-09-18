@@ -1,3 +1,5 @@
+"""Provide plotting helpers for MNIST images and statistics."""
+
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np

@@ -1,3 +1,5 @@
+"""Define file paths for the MNIST training and test datasets."""
+
 import os
 from os.path import join
 

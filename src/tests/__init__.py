@@ -1,3 +1,4 @@
+"""Define the test package for the MNIST project."""
 import os
 
 import pytest

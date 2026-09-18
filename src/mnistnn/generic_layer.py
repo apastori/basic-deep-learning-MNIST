@@ -1,3 +1,5 @@
+"""Provide a base implementation for sequential neural-network layers."""
+
 from abc import abstractmethod
 
 import numpy as np
@@ -12,7 +14,9 @@ class GenericLayer(LayerParent):
     """A "layer" of neurons in a neural network."""
 
     def __init__(self, neurons: int):
-        """The number of "neurons" roughly corresponds to the "breadth" ofthe
+        """Initialize the layer with the specified number of neurons.
+
+        The number of "neurons" roughly corresponds to the "breadth" of the
         layer.
         """
         self.neurons: int = neurons
@@ -23,11 +27,11 @@ class GenericLayer(LayerParent):
 
     @abstractmethod
     def _setup_layer(self, num_in: int) -> None:
-        """The _setup_layer function must be implemented for each layer."""
+        """Set up the layer for the specified input size."""
         raise NotImplementedError()
 
     def forward(self, input_: np.ndarray) -> np.ndarray:
-        """Passes input forward through a series of operations."""
+        """Pass input forward through a series of operations."""
         if self.first:
             self._setup_layer(input_)
             self.first = False
@@ -38,7 +42,8 @@ class GenericLayer(LayerParent):
         return self.output
 
     def backward(self, output_grad: np.ndarray) -> np.ndarray:
-        """Passes output_grad backward through a series of operations.
+        """Pass output_grad backward through a series of operations.
+
         Checks appropriate shapes.
         """
         assert_same_shape(self.output, output_grad)
@@ -48,7 +53,7 @@ class GenericLayer(LayerParent):
         self._param_grads()
         return input_grad
     def _param_grads(self) -> np.ndarray:
-        """Extracts the _param_grads from a layer's operations."""
+        """Extract the _param_grads from the layer's operations."""
         self.param_grads = []
         for operation in self.operations:
             if issubclass(operation.__class__, ParamOperation):
@@ -56,7 +61,7 @@ class GenericLayer(LayerParent):
         return self.param_grads
 
     def _params(self) -> np.ndarray:
-        """Extracts the _params from a layer's operations."""
+        """Extract the _params from the layer's operations."""
         self.params = []
         for operation in self.operations:
             if issubclass(operation.__class__, ParamOperation):

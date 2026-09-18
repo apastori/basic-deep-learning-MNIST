@@ -38,7 +38,9 @@ class TestMNISTVisualizer:
         try:
             MNISTVisualizer.plot_single_image(images_array[0], labels_array[0])
         except Exception as e:
-            raise AssertionError(f"Plotting single image raised an exception: {e}")
+            raise AssertionError(
+                f"Plotting single image raised an exception: {e}"
+            ) from e
 
     def test_plot_random_images_grid(self, training_data: tuple[np.ndarray, np.ndarray]) -> None:
         """Test that plotting a grid of 20 random MNIST images does not raise errors."""
@@ -61,6 +63,6 @@ class TestMNISTVisualizer:
         except Exception as e:
             raise AssertionError(
                 f"Plotting 20 random MNIST images raised an exception: {e}"
-            )
+            ) from e
 
 
