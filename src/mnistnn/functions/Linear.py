@@ -1,19 +1,21 @@
 import numpy as np
+
 from mnistnn.operation import Operation  # type: ignore # Corrected module path
 
+
 class Linear(Operation):
-    
     """Linear transformation (fully connected layer)"""
+
     def __init__(self, input_size: int, output_size: int) -> None:
         # The Initialization for Linear Function
         self.weights: np.ndarray = np.random.randn(input_size, output_size) * np.sqrt(2.0 / input_size)
         self.bias: np.ndarray = np.zeros((1, output_size))
 
-    """Forward Pass during Prediction"""    
+    """Forward Pass during Prediction"""
     def _output(self) -> np.ndarray:
         ## output value of this function is stored in output through forward function in Operation class
         return np.dot(self.input_, self.weights) + self.bias
-    
+
     """Backward Pass during Training"""
     def _input_grad(self, grad: np.ndarray) -> np.ndarray:
         self.grad_weights: np.ndarray = np.dot(self.input_.T, grad)
