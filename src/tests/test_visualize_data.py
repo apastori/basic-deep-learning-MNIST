@@ -1,6 +1,5 @@
 """Tests for MNIST Visualizer class."""
 
-
 import numpy as np
 import pytest
 
@@ -21,7 +20,9 @@ class TestMNISTVisualizer:
         return loader
 
     @pytest.fixture
-    def training_data(self, data_loader: MNISTDataLoader) -> tuple[np.ndarray, np.ndarray]:
+    def training_data(
+        self, data_loader: MNISTDataLoader
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Retrieve training images and labels."""
         train_images: dict[str, str | int | np.ndarray]
         train_labels: dict[str, str | int | np.ndarray]
@@ -30,7 +31,9 @@ class TestMNISTVisualizer:
         labels_array: np.ndarray = train_labels["labels"]
         return images_array, labels_array
 
-    def test_plot_single_image(self, training_data: tuple[np.ndarray, np.ndarray]) -> None:
+    def test_plot_single_image(
+        self, training_data: tuple[np.ndarray, np.ndarray]
+    ) -> None:
         """Test that plotting a single image does not raise errors."""
         images_array: np.ndarray
         labels_array: np.ndarray
@@ -42,13 +45,17 @@ class TestMNISTVisualizer:
                 f"Plotting single image raised an exception: {e}"
             ) from e
 
-    def test_plot_random_images_grid(self, training_data: tuple[np.ndarray, np.ndarray]) -> None:
+    def test_plot_random_images_grid(
+        self, training_data: tuple[np.ndarray, np.ndarray]
+    ) -> None:
         """Test that plotting a grid of 20 random MNIST images does not raise errors."""
         images_array: np.ndarray
         labels_array: np.ndarray
         images_array, labels_array = training_data
         rng: np.random.Generator = np.random.default_rng(seed=42)
-        indices: np.ndarray = rng.choice(len(images_array), size=20, replace=False)
+        indices: np.ndarray = rng.choice(
+            len(images_array), size=20, replace=False
+        )
 
         random_images: np.ndarray = images_array[indices]
         random_labels: np.ndarray = labels_array[indices]
@@ -64,5 +71,3 @@ class TestMNISTVisualizer:
             raise AssertionError(
                 f"Plotting 20 random MNIST images raised an exception: {e}"
             ) from e
-
-

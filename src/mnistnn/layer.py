@@ -10,11 +10,15 @@ from mnistnn.operation import Operation
 class Layer(LayerParent):
     """Layer combining linear transformation and activation."""
 
-    def __init__(self, input_size: int, output_size: int, activation: Operation = None) -> None:
+    def __init__(
+        self, input_size: int, output_size: int, activation: Operation = None
+    ) -> None:
         """Initialize the layer with dimensions and an activation."""
         if (input_size <= 0) or (output_size <= 0):
-            raise ValueError("Input and output sizes must be positive integers.")
-        if (activation is None):
+            raise ValueError(
+                "Input and output sizes must be positive integers."
+            )
+        if activation is None:
             raise ValueError("Activation function must be provided.")
         self.linear: Linear = Linear(input_size, output_size)
         self.activation: Operation = activation

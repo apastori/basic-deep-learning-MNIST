@@ -151,11 +151,11 @@ class MNISTDataLoader:
         dict[str, str | int | np.ndarray],
         dict[str, str | int | np.ndarray],
     ]:
-        images_dict: dict[str, str | int | np.ndarray] = (
-            self._read_images(images_filepath)
+        images_dict: dict[str, str | int | np.ndarray] = self._read_images(
+            images_filepath
         )
-        labels_dict: dict[str, str | int | np.ndarray] = (
-            self._read_labels(labels_filepath)
+        labels_dict: dict[str, str | int | np.ndarray] = self._read_labels(
+            labels_filepath
         )
         if images_dict["num_images"] != labels_dict["num_labels"]:
             raise ValueError(

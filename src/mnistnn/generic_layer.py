@@ -52,6 +52,7 @@ class GenericLayer(LayerParent):
             input_grad = output_grad
         self._param_grads()
         return input_grad
+
     def _param_grads(self) -> np.ndarray:
         """Extract the _param_grads from the layer's operations."""
         self.param_grads = []
