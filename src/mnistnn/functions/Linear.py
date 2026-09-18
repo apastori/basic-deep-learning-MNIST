@@ -4,7 +4,7 @@ from mnistnn.operation import Operation  # type: ignore # Corrected module path
 
 
 class Linear(Operation):
-    """Linear transformation (fully connected layer)"""
+    """Linear transformation (fully connected layer)."""
 
     def __init__(self, input_size: int, output_size: int) -> None:
         # The Initialization for Linear Function

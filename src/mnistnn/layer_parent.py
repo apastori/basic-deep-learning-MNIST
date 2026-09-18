@@ -4,7 +4,7 @@ import numpy as np
 
 
 class LayerParent(ABC):
-    """Abstract base class for layers"""
+    """Abstract base class for layers."""
 
     @abstractmethod
     def forward(self, input_: np.ndarray) -> np.ndarray:

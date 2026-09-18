@@ -6,7 +6,7 @@ from mnistnn.utils.shape import assert_same_shape
 
 
 class Operation(ABC):
-    """Base class for operations"""
+    """Base class for operations."""
 
     def forward(self, input_: np.ndarray) -> np.ndarray:
         """Stores input in the self._input instance variable

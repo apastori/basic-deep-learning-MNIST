@@ -4,7 +4,7 @@ from mnistnn.operation import Operation  # type: ignore # Corrected module path
 
 
 class Softmax(Operation):
-    """Softmax activation function"""
+    """Softmax activation function."""
 
     """Forward Pass during Prediction"""
     def _output(self) -> np.ndarray:

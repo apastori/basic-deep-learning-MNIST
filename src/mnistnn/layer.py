@@ -6,7 +6,7 @@ from mnistnn.operation import Operation
 
 
 class Layer(LayerParent):
-    """Layer combining linear transformation and activation"""
+    """Layer combining linear transformation and activation."""
 
     def __init__(self, input_size: int, output_size: int, activation: Operation = None) -> None:
         if (input_size <= 0) or (output_size <= 0):

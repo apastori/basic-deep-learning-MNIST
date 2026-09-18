@@ -7,12 +7,10 @@ from mnistnn.utils.shape import assert_same_shape
 
 
 class ParamOperation(Operation):
-	"""An Operation with parameters.
-	"""
+	"""An Operation with parameters."""
 
 	def __init__(self, param: np.ndarray) -> None:
-		"""The ParamOperation method
-		"""
+		"""The ParamOperation method."""
 		super().__init__()
 		self.param = param
 
@@ -31,6 +29,5 @@ class ParamOperation(Operation):
 
 	@abstractmethod
 	def _param_grad(self, output_grad: np.ndarray) -> np.ndarray:
-		"""Every subclass of ParamOperation must implement _param_grad.
-		"""
+		"""Every subclass of ParamOperation must implement _param_grad."""
 		raise NotImplementedError()

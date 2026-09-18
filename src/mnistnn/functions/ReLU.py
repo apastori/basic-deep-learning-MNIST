@@ -4,7 +4,7 @@ from mnistnn.operation import Operation  # type: ignore # Corrected module path
 
 
 class ReLU(Operation):
-    """ReLU activation function"""
+    """ReLU activation function."""
 
     """Forward Pass during Prediction"""
     def _output(self) -> np.ndarray:

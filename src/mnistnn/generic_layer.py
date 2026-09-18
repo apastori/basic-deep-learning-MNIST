@@ -9,12 +9,11 @@ from mnistnn.utils.shape import assert_same_shape
 
 
 class GenericLayer(LayerParent):
-    """A "layer" of neurons in a neural network.
-    """
+    """A "layer" of neurons in a neural network."""
 
     def __init__(self, neurons: int):
         """The number of "neurons" roughly corresponds to the "breadth" ofthe
-        layer
+        layer.
         """
         self.neurons: int = neurons
         self.first: bool = True
@@ -24,13 +23,11 @@ class GenericLayer(LayerParent):
 
     @abstractmethod
     def _setup_layer(self, num_in: int) -> None:
-        """The _setup_layer function must be implemented for each layer.
-        """
+        """The _setup_layer function must be implemented for each layer."""
         raise NotImplementedError()
 
     def forward(self, input_: np.ndarray) -> np.ndarray:
-        """Passes input forward through a series of operations.
-        """
+        """Passes input forward through a series of operations."""
         if self.first:
             self._setup_layer(input_)
             self.first = False
@@ -51,8 +48,7 @@ class GenericLayer(LayerParent):
         self._param_grads()
         return input_grad
     def _param_grads(self) -> np.ndarray:
-        """Extracts the _param_grads from a layer's operations.
-        """
+        """Extracts the _param_grads from a layer's operations."""
         self.param_grads = []
         for operation in self.operations:
             if issubclass(operation.__class__, ParamOperation):
@@ -60,8 +56,7 @@ class GenericLayer(LayerParent):
         return self.param_grads
 
     def _params(self) -> np.ndarray:
-        """Extracts the _params from a layer's operations.
-        """
+        """Extracts the _params from a layer's operations."""
         self.params = []
         for operation in self.operations:
             if issubclass(operation.__class__, ParamOperation):
