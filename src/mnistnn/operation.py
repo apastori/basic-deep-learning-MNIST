@@ -10,6 +10,12 @@ from mnistnn.utils.shape import assert_same_shape
 class Operation(ABC):
     """Base class for operations."""
 
+    def __init__(self) -> None:
+        """Initialize the input, output, and gradient state."""
+        self.input_: np.ndarray | None = None
+        self.output: np.ndarray | None = None
+        self.input_grad: np.ndarray | None = None
+
     def forward(self, input_: np.ndarray) -> np.ndarray:
         """Store input in the self._input instance variable.
 

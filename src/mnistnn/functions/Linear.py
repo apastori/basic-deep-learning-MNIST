@@ -10,6 +10,8 @@ class Linear(Operation):
 
     def __init__(self, input_size: int, output_size: int) -> None:
         """Initialize weights and bias for the linear transformation."""
+        super().__init__()
+
         self.weights: np.ndarray = np.random.randn(
             input_size, output_size
         ) * np.sqrt(2.0 / input_size)

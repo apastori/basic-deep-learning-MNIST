@@ -1,5 +1,7 @@
 """Provide plotting helpers for MNIST images and statistics."""
 
+from typing import NoReturn
+
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,6 +9,14 @@ import numpy as np
 
 class MNISTVisualizer:
     """Utility class for visualizing MNIST data."""
+
+    def __new__(cls) -> NoReturn:
+        """Prevent instantiation of this static utility class."""
+        raise TypeError("MNISTVisualizer is a static utility class")
+
+    def __init__(self) -> None:
+        """Reject direct initialization of this static utility class."""
+        raise TypeError("MNISTVisualizer is a static utility class")
 
     @staticmethod
     def plot_single_image(
