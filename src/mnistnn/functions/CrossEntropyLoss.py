@@ -2,11 +2,13 @@
 
 import numpy as np
 
+from mnistnn.loss import Loss
 
-class CrossEntropyLoss:
+
+class CrossEntropyLoss(Loss):
     """Calculate cross-entropy loss for multi-class classification."""
 
-    def _output(self, predictions, targets):
+    def _output(self, predictions, targets) -> float:
         """Calculate loss from softmax predictions and one-hot targets.
 
         Predictions have shape ``(batch_size, num_classes)``. Targets are

@@ -7,6 +7,7 @@ from mnistnn.functions.CrossEntropyLoss import CrossEntropyLoss
 from mnistnn.functions.ReLU import ReLU
 from mnistnn.layer import Layer
 from mnistnn.layer_parent import LayerParent
+from mnistnn.loss import Loss
 
 
 class MNISTNeuralNetwork:
@@ -36,7 +37,7 @@ class MNISTNeuralNetwork:
             Layer(input_size=64, output_size=10, activation=Softmax()),
         ]
         # Loss function
-        self.loss_fn = CrossEntropyLoss()
+        self.loss_fn: Loss = CrossEntropyLoss()
 
     def forward(self, input_: np.ndarray) -> np.ndarray:
         """Perform a forward pass through the network."""
