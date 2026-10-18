@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from mnistnn.operation import Operation  # type: ignore # Corrected module path
+from mnistnn.operation import Operation
 
 
 class Softmax(Operation):
@@ -12,17 +12,23 @@ class Softmax(Operation):
 
     def _output(self) -> np.ndarray:
         # Check if the input is a 2D array
-        if self.input_.ndim != 2:
+        if self.input_ is None or self.input_.ndim != 2:
             raise ValueError("Input to Softmax must be a 2D array")
-        # Subtract max for numerical stability
-        exp_x: np.ndarray = np.exp(
-            self.input_ - np.max(self.input_, axis=1, keepdims=True)
-        )
+        exp_input = np.exp(self.input_)
         # Output already saved in self.output through forward function in Operation class
-        return exp_x / np.sum(exp_x, axis=1, keepdims=True)
+        return exp_input / np.sum(exp_input, axis=1, keepdims=True)
 
     """Backward Pass during Training"""
 
     def _input_grad(self, grad: np.ndarray) -> np.ndarray:
-        # Simplified backward pass for use with cross-entropy
-        return grad
+        """Compute the gradient with respect to the input logits."""
+        if self.output is None:
+            raise RuntimeError(
+                "Softmax backward requires a previous forward pass"
+            )
+        probabilities = self.output
+
+        return probabilities * (
+            grad
+            - np.sum(grad * probabilities, axis=1, keepdims=True)
+        )
