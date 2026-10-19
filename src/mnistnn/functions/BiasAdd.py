@@ -26,5 +26,5 @@ class BiasAdd(ParamOperation):
 
     def _param_grad(self, grad: np.ndarray) -> np.ndarray:
         """Compute parameter gradient."""
-        param_grad = np.ones_like(self.param) * grad
+        param_grad: np.ndarray = np.ones_like(self.param) * grad
         return np.sum(param_grad, axis=0).reshape(1, param_grad.shape[1])
