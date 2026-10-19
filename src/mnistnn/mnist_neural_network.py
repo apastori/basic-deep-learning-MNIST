@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from mnistnn.functions import Softmax
+from mnistnn.functions import Softmax, SoftmaxStable
 from mnistnn.functions.CrossEntropyLoss import CrossEntropyLoss
 from mnistnn.functions.ReLU import ReLU
 from mnistnn.layer import Layer
@@ -34,7 +34,7 @@ class MNISTNeuralNetwork:
                 output_size=64,
                 activation=ReLU(),
             ),
-            Layer(input_size=64, output_size=10, activation=Softmax()),
+            Layer(input_size=64, output_size=10, activation=SoftmaxStable()),
         ]
         # Loss function
         self.loss_fn: Loss = CrossEntropyLoss()
@@ -47,13 +47,13 @@ class MNISTNeuralNetwork:
 
         x: np.ndarray = input_
         for layer in self.layers:
-            x = layer.forward(x)
+            x: np.ndarray = layer.forward(x)
 
         return x
 
-    def backward(self, output_grad):
+    def backward(self, output_grad: np.ndarray) -> np.ndarray:
         """Perform a backward pass through the network."""
-        input_grad = output_grad
+        input_grad: np.ndarray = output_grad
 
         for layer in reversed(self.layers):
             input_grad = layer.backward(input_grad)
@@ -68,23 +68,27 @@ class MNISTNeuralNetwork:
 
     def update_parameters(self, learning_rate: float):
         """Update weights and biases using gradient descent."""
-        for layer in [self.layer1, self.layer2, self.layer3]:
+        for layer in self.layers:
+            # define weights and bias
+            weights: np.ndarray
+            bias: np.ndarray
             weights, bias = layer.get_params()
+            grad_weights: np.ndarray
+            grad_bias: np.ndarray
             grad_weights, grad_bias = layer.get_grads()
-
             weights -= learning_rate * grad_weights
             bias -= learning_rate * grad_bias
 
-    def train_step(self, x, y, learning_rate=0.01):
+    def train_step(self, x: np.ndarray, y: np.ndarray, learning_rate: float = 0.01):
         """Perform a single training step."""
         # Forward pass
-        predictions = self.forward(x)
+        predictions: np.ndarray = self.forward(x)
 
         # Compute loss
-        loss = self.compute_loss(predictions, y)
+        loss: float = self.compute_loss(predictions, y)
 
         # Backward pass
-        grad = self.loss_fn.backward()
+        grad: np.ndarray = self.loss_fn.backward()
         self.backward(grad)
 
         # Update parameters
@@ -92,18 +96,18 @@ class MNISTNeuralNetwork:
 
         return loss
 
-    def predict(self, x):
+    def predict(self, x: np.ndarray) -> np.ndarray:
         """Predict class labels."""
-        predictions = self.forward(x)
+        predictions: np.ndarray = self.forward(x)
         return np.argmax(predictions, axis=1)
 
-    def evaluate(self, x, y):
+    def evaluate(self, x: np.ndarray, y: np.ndarray) -> float:
         """Evaluate accuracy on a dataset."""
-        predictions = self.predict(x)
+        predictions: np.ndarray = self.predict(x)
 
         # Convert one-hot encoded labels to class indices if needed
         if len(y.shape) == 2:
-            y = np.argmax(y, axis=1)
+            y: np.ndarray = np.argmax(y, axis=1)
 
-        accuracy = np.mean(predictions == y)
+        accuracy: float = np.mean(predictions == y)
         return accuracy
