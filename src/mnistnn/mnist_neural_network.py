@@ -2,9 +2,9 @@
 
 import numpy as np
 
-from mnistnn.functions import Softmax, SoftmaxStable
 from mnistnn.functions.CrossEntropyLoss import CrossEntropyLoss
 from mnistnn.functions.ReLU import ReLU
+from mnistnn.functions.SoftmaxStable import SoftmaxStable
 from mnistnn.layer import Layer
 from mnistnn.layer_parent import LayerParent
 from mnistnn.loss import Loss
@@ -20,7 +20,7 @@ class MNISTNeuralNetwork:
     - Output Layer: 10 units with Softmax
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the network layers and loss function."""
         # Initialize layers
         self.layers: list[LayerParent] = [
