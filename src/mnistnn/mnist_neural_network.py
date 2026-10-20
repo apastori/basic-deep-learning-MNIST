@@ -66,7 +66,7 @@ class MNISTNeuralNetwork:
         """Compute the cross-entropy loss."""
         return self.loss_fn.forward(predictions, targets)
 
-    def update_parameters(self, learning_rate: float):
+    def update_parameters(self, learning_rate: float) -> None:
         """Update weights and biases using gradient descent."""
         for layer in self.layers:
             # define weights and bias
@@ -79,7 +79,7 @@ class MNISTNeuralNetwork:
             weights -= learning_rate * grad_weights
             bias -= learning_rate * grad_bias
 
-    def train_step(self, x: np.ndarray, y: np.ndarray, learning_rate: float = 0.01):
+    def train_step(self, x: np.ndarray, y: np.ndarray, learning_rate: float = 0.01) -> float:
         """Perform a single training step."""
         # Forward pass
         predictions: np.ndarray = self.forward(x)
