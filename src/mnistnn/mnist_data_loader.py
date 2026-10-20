@@ -82,12 +82,14 @@ class MNISTDataLoader:
             labels: list[int] = []
             for byte in raw_bytes:
                 labels.append(int(byte))
+            if any(label < 0 or label > 9 for label in labels):
+                raise ValueError("Labels must be digits between 0 and 9")
             if len(labels) != num_labels:
                 raise ValueError("Label count does not match header")
         labels_dict: dict[str, str | int | np.ndarray] = {
             "type": "labels",
             "num_labels": num_labels,
-            "labels": np.array(labels),
+            "labels": np.array(labels, dtype=np.uint8),
         }
         return labels_dict
 
@@ -132,12 +134,12 @@ class MNISTDataLoader:
                     row: list[int] = flat[r * cols : (r + 1) * cols]
                     image.append(row)
                 images.append(np.array(image))
-        images_dict: dict[str, str | int | list[int]] = {
+        images_dict: dict[str, str | int | np.ndarray] = {
             "type": "images",
             "num_images": num_images,
             "rows": rows,
             "cols": cols,
-            "images": np.array(images),
+            "images": np.array(images, dtype=np.uint8),
         }
         return images_dict
 
