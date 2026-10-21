@@ -43,6 +43,11 @@ class MNISTNeuralNetwork:
         """Perform a forward pass through the network."""
         # Flatten input if needed (batch_size, 28, 28) -> (batch_size, 784)
         if len(input_.shape) == 3:
+            if input_.shape[1:] != (28, 28):
+                raise ValueError(
+                    f"Expected images with shape (batch_size, 28, 28), "
+                    f"got {input_.shape}"
+                )
             input_ = input_.reshape(input_.shape[0], -1)
 
         x: np.ndarray = input_
