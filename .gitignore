@@ -68,3 +68,5 @@ Thumbs.db
 # Project specific
 *.db
 *.sqlite3
+/log/*
+!/log/.gitkeep
