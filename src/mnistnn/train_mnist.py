@@ -9,15 +9,14 @@ from typing import TYPE_CHECKING
 import numpy as np
 import numpy.typing as npt
 
+from mnistnn.log_config import configure_file_logging
 from mnistnn.mnist_data_loader import MNISTDataLoader as MNISTDataLoader
 from mnistnn.visualize_mnist import visualize_mnist
 
 if TYPE_CHECKING:
     from mnistnn.mnist_neural_network import MNISTNeuralNetwork
 
-
 logger = logging.getLogger(__name__)
-
 
 def _prepare_images(images: np.ndarray, dataset_name: str) -> np.ndarray:
     """Validate MNIST image dimensions and flatten image batches."""
@@ -41,8 +40,9 @@ def train_mnist(
     batch_size: int = 64,
     learning_rate: float = 0.01,
     visualize: bool = True,
+    append_logs: bool = True,
 ) -> MNISTNeuralNetwork:
-    """Load the MNIST dataset and train the neural network."""
+    """Load MNIST and train the network, optionally starting a fresh log."""
     if epochs <= 0:
         raise ValueError('epochs must be greater than zero')
     if batch_size <= 0:
@@ -50,6 +50,8 @@ def train_mnist(
     if learning_rate <= 0:
         raise ValueError('learning_rate must be greater than zero')
 
+    log_path = configure_file_logging(logger, append=append_logs)
+    logger.info('Writing MNIST training logs to %s', log_path)
     logger.info(
         'Starting MNIST training (epochs=%d, batch_size=%d, '
         'learning_rate=%g, visualize=%s)',
@@ -69,19 +71,24 @@ def train_mnist(
     test_labels_info: dict[str, str | int | np.ndarray] = data_loader.test_info[1]
     # The image data is stored as a NumPy array of shape (num_images, rows, cols) 3D
     # The label data is stored as a NumPy array of shape (num_labels,) 1D
-    train_images: np.ndarray = train_images_info['images']
-    train_labels: np.ndarray = train_labels_info['labels']
-    test_images: np.ndarray = test_images_info['images']
-    test_labels: np.ndarray = test_labels_info['labels']
+    train_images_value: np.ndarray = train_images_info['images']
+    train_labels_value: np.ndarray = train_labels_info['labels']
+    test_images_value: np.ndarray = test_images_info['images']
+    test_labels_value: np.ndarray = test_labels_info['labels']
 
-    if not isinstance(train_images, np.ndarray):
+    if not isinstance(train_images_value, np.ndarray):
         raise TypeError('Training images must be a NumPy array')
-    if not isinstance(train_labels, np.ndarray):
+    if not isinstance(train_labels_value, np.ndarray):
         raise TypeError('Training labels must be a NumPy array')
-    if not isinstance(test_images, np.ndarray):
+    if not isinstance(test_images_value, np.ndarray):
         raise TypeError('Test images must be a NumPy array')
-    if not isinstance(test_labels, np.ndarray):
+    if not isinstance(test_labels_value, np.ndarray):
         raise TypeError('Test labels must be a NumPy array')
+
+    train_images: np.ndarray = train_images_value
+    train_labels: np.ndarray = train_labels_value
+    test_images: np.ndarray = test_images_value
+    test_labels: np.ndarray = test_labels_value
 
     prepared_train_images: np.ndarray = _prepare_images(
         train_images, 'Training'
