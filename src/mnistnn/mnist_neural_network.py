@@ -38,6 +38,9 @@ class MNISTNeuralNetwork:
         ]
         # Loss function
         self.loss_fn: Loss = CrossEntropyLoss()
+        # SGD momentum buffers, allocated on the first parameter update
+        self._weight_velocities: list[np.ndarray] | None = None
+        self._bias_velocities: list[np.ndarray] | None = None
 
     def forward(self, input_: np.ndarray) -> np.ndarray:
         """Perform a forward pass through the network."""
@@ -71,20 +74,47 @@ class MNISTNeuralNetwork:
         """Compute the cross-entropy loss."""
         return self.loss_fn.forward(predictions, targets)
 
-    def update_parameters(self, learning_rate: float) -> None:
-        """Update weights and biases using gradient descent."""
-        for layer in self.layers:
-            # define weights and bias
+    def update_parameters(
+        self, learning_rate: float, momentum: float = 0.9
+    ) -> None:
+        """Update weights and biases using SGD with momentum."""
+        if self._weight_velocities is None or self._bias_velocities is None:
+            self._weight_velocities = []
+            self._bias_velocities = []
+            for layer in self.layers:
+                weights: np.ndarray
+                bias: np.ndarray
+                weights, bias = layer.get_params()
+                self._weight_velocities.append(np.zeros_like(weights))
+                self._bias_velocities.append(np.zeros_like(bias))
+
+        for index, layer in enumerate(self.layers):
             weights: np.ndarray
             bias: np.ndarray
             weights, bias = layer.get_params()
             grad_weights: np.ndarray
             grad_bias: np.ndarray
             grad_weights, grad_bias = layer.get_grads()
-            weights -= learning_rate * grad_weights
-            bias -= learning_rate * grad_bias
+            weight_velocity: np.ndarray
+            bias_velocity: np.ndarray
+            weight_velocity: np.ndarray = (
+                momentum * self._weight_velocities[index] + grad_weights
+            )
+            bias_velocity: np.ndarray = (
+                momentum * self._bias_velocities[index] + grad_bias
+            )
+            self._weight_velocities[index] = weight_velocity
+            self._bias_velocities[index] = bias_velocity
+            weights -= learning_rate * weight_velocity
+            bias -= learning_rate * bias_velocity
 
-    def train_step(self, x: np.ndarray, y: np.ndarray, learning_rate: float = 0.01) -> float:
+    def train_step(
+        self,
+        x: np.ndarray,
+        y: np.ndarray,
+        learning_rate: float,
+        momentum: float = 0.9,
+    ) -> float:
         """Perform a single training step."""
         # Forward pass
         predictions: np.ndarray = self.forward(x)
@@ -97,7 +127,7 @@ class MNISTNeuralNetwork:
         self.backward(grad)
 
         # Update parameters
-        self.update_parameters(learning_rate)
+        self.update_parameters(learning_rate, momentum)
 
         return loss
 
