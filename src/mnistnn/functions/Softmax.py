@@ -29,6 +29,5 @@ class Softmax(Operation):
         probabilities = self.output
 
         return probabilities * (
-            grad
-            - np.sum(grad * probabilities, axis=1, keepdims=True)
+            grad - np.sum(grad * probabilities, axis=1, keepdims=True)
         )

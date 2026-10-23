@@ -31,6 +31,7 @@ class SoftmaxStable(Operation):
         )
 
     """Backward Pass during Training"""
+
     def _input_grad(self, grad: np.ndarray) -> np.ndarray:
         if self.output is None:
             raise RuntimeError(
