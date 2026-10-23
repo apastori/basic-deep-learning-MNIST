@@ -18,6 +18,10 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+LEARNING_RATE_DECAY: float = 0.9
+LEARNING_RATE_FLOOR: float = 1e-4
+
+
 def _prepare_images(images: np.ndarray, dataset_name: str) -> np.ndarray:
     """Validate MNIST image dimensions and flatten image batches."""
     if images.ndim == 3:
@@ -35,10 +39,16 @@ def _prepare_images(images: np.ndarray, dataset_name: str) -> np.ndarray:
     )
 
 
+def _normalize_images(images: np.ndarray) -> np.ndarray:
+    """Scale pixels to [0, 1] and mean-center them to [-0.5, 0.5]."""
+    return images.astype(np.float64) / 255.0 - 0.5
+
+
 def train_mnist(
-    epochs: int = 5,
+    epochs: int = 15,
     batch_size: int = 64,
-    learning_rate: float = 0.01,
+    learning_rate: float = 0.05,
+    momentum: float = 0.9,
     visualize: bool = True,
     append_logs: bool = True,
 ) -> MNISTNeuralNetwork:
@@ -49,26 +59,39 @@ def train_mnist(
         raise ValueError('batch_size must be greater than zero')
     if learning_rate <= 0:
         raise ValueError('learning_rate must be greater than zero')
+    if momentum < 0.0 or momentum >= 1.0:
+        raise ValueError('momentum must be in the range [0, 1)')
 
     log_path = configure_file_logging(logger, append=append_logs)
     logger.info('Writing MNIST training logs to %s', log_path)
     logger.info(
         'Starting MNIST training (epochs=%d, batch_size=%d, '
-        'learning_rate=%g, visualize=%s)',
+        'learning_rate=%g, momentum=%g, visualize=%s)',
         epochs,
         batch_size,
         learning_rate,
+        momentum,
         visualize,
     )
 
     from mnistnn.data_config import dict_config_test, dict_config_train
     from mnistnn.mnist_neural_network import MNISTNeuralNetwork
 
-    data_loader: MNISTDataLoader = MNISTDataLoader(dict_config_train, dict_config_test)
-    train_images_info: dict[str, str | int | np.ndarray] = data_loader.training_info[0]
-    train_labels_info: dict[str, str | int | np.ndarray] = data_loader.training_info[1]
-    test_images_info: dict[str, str | int | np.ndarray] = data_loader.test_info[0]
-    test_labels_info: dict[str, str | int | np.ndarray] = data_loader.test_info[1]
+    data_loader: MNISTDataLoader = MNISTDataLoader(
+        dict_config_train, dict_config_test
+    )
+    train_images_info: dict[str, str | int | np.ndarray] = (
+        data_loader.training_info[0]
+    )
+    train_labels_info: dict[str, str | int | np.ndarray] = (
+        data_loader.training_info[1]
+    )
+    test_images_info: dict[str, str | int | np.ndarray] = (
+        data_loader.test_info[0]
+    )
+    test_labels_info: dict[str, str | int | np.ndarray] = (
+        data_loader.test_info[1]
+    )
     # The image data is stored as a NumPy array of shape (num_images, rows, cols) 3D
     # The label data is stored as a NumPy array of shape (num_labels,) 1D
     train_images_value: np.ndarray = train_images_info['images']
@@ -131,7 +154,7 @@ def train_mnist(
     visualize_mnist(
         train_images=train_images,
         train_labels=train_labels,
-        visualize=visualize
+        visualize=visualize,
     )
 
     network: MNISTNeuralNetwork = MNISTNeuralNetwork()
@@ -141,6 +164,7 @@ def train_mnist(
     # generated one-hot encoded targets for the 10 classes (digits 0-9)
     # Matrix 10 X 10
     class_targets: np.ndarray = np.eye(10, dtype=np.float64)
+    current_learning_rate: float = learning_rate
     # Train for the specified number of epochs
     training_started_at: float = perf_counter()
     for epoch in range(epochs):
@@ -154,24 +178,26 @@ def train_mnist(
             batch_indices: npt.NDArray[np.int64] = shuffled_indices[
                 start : start + batch_size
             ]
-            # The division by 255.0 normalizes pixel values to the range [0, 1]
-            batch_images: np.ndarray = (
-                train_images[batch_indices].astype(np.float64) / 255.0
+            batch_images: np.ndarray = _normalize_images(
+                train_images[batch_indices]
             )
             # Get the correct labels for the current batch
             correct_labels: np.ndarray = train_labels[batch_indices]
             # Get the one-hot encoded target vectors for the correct labels
             batch_targets: np.ndarray = class_targets[correct_labels]
             avg_loss: float = network.train_step(
-                batch_images, batch_targets, learning_rate
+                batch_images,
+                batch_targets,
+                current_learning_rate,
+                momentum,
             )
             total_loss += avg_loss * len(batch_indices)
         # Evaluate the model on the test set after each epoch
         correct_predictions: int = 0
         for start in range(0, test_size, batch_size):
             end: int = start + batch_size
-            test_batch_images: np.ndarray = (
-                test_images[start:end].astype(np.float64) / 255.0
+            test_batch_images: np.ndarray = _normalize_images(
+                test_images[start:end]
             )
             predictions: np.ndarray = network.predict(test_batch_images)
             correct_predictions += int(
@@ -182,12 +208,17 @@ def train_mnist(
         test_accuracy: float = correct_predictions / test_size
         logger.info(
             'Epoch %d/%d - loss: %.4f - test accuracy: %.2f%% - '
-            'duration: %.2fs',
+            'learning_rate=%g - duration: %.2fs',
             epoch + 1,
             epochs,
             average_loss,
             test_accuracy * 100,
+            current_learning_rate,
             perf_counter() - epoch_started_at,
+        )
+        current_learning_rate = max(
+            current_learning_rate * LEARNING_RATE_DECAY,
+            LEARNING_RATE_FLOOR,
         )
 
     logger.info(
