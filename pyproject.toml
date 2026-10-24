@@ -38,4 +38,8 @@ ignore = [
 python_version = "3.13"
 strict = true
 ignore_missing_imports = true
+mypy_path = "src"
+explicit_package_bases = true
+# The codebase annotates NumPy arrays as np.ndarray, not ndarray[Any, dtype]
+disallow_any_generics = false
 exclude = [".venv", "build", "dist", "__pycache__", ".git"]
