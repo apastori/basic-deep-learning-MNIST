@@ -14,9 +14,11 @@ Usage:
     invoke install         - Install development dependencies
     invoke check-all       - Run all checks without modifying files
     invoke run-tests-init  - Run the src/tests/__init__.py file directly
+    invoke train           - Train the MNIST network
     invoke --list          - Show all available tasks
 """
 
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -146,3 +148,13 @@ def run_tests_init(c: Context) -> None:
     print(f"▶ Running {target} with {sys.executable}...")
     c.run(f"{sys.executable} -u {target}")
     print("✅ Finished running tests init file")
+
+
+@task
+def train(c: Context) -> None:
+    """Train the MNIST network with ``python -m mnistnn``."""
+    print("▶ Training MNIST network...")
+    env = os.environ.copy()
+    env["PYTHONPATH"] = "src"
+    c.run(f"{sys.executable} -m mnistnn", env=env)
+    print("✅ Training complete")

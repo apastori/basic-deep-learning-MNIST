@@ -4,7 +4,7 @@
 # ======================================================
 
 .PHONY: help format format-check lint lint-fix typecheck qa clean install
-.PHONY: run-tests-init
+.PHONY: run-tests-init train
 
 # Default target - show help
 help:
@@ -18,6 +18,7 @@ help:
 	@echo "  make clean         - Remove cache directories and temporary files"
 	@echo "  make install       - Install development dependencies"
 	@echo "  make run-tests-init- - Run the test package __init__.py directly"
+	@echo "  make train         - Train the MNIST network"
 	@echo "  make help          - Show this help message"
 
 
@@ -78,3 +79,10 @@ run-tests-init:
 	@echo "▶ Running src/tests/__init__.py..."
 	python -u src/tests/__init__.py
 	@echo "✅ Run complete"
+
+
+# Train the MNIST network
+train:
+	@echo "▶ Training MNIST network..."
+	PYTHONPATH=src python -m mnistnn
+	@echo "✅ Training complete"
