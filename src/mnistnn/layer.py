@@ -11,7 +11,10 @@ class Layer(LayerParent):
     """Layer combining linear transformation and activation."""
 
     def __init__(
-        self, input_size: int, output_size: int, activation: Operation = None
+        self,
+        input_size: int,
+        output_size: int,
+        activation: Operation | None = None,
     ) -> None:
         """Initialize the layer with dimensions and an activation."""
         if (input_size <= 0) or (output_size <= 0):
@@ -27,7 +30,7 @@ class Layer(LayerParent):
 
     def forward(self, input_: np.ndarray) -> np.ndarray:
         """Compute the layer output for the given input."""
-        self.linear_output: np.ndarray = self.linear.forward(input_)
+        self.linear_output = self.linear.forward(input_)
         if self.activation:
             return self.activation.forward(self.linear_output)
         return self.linear_output

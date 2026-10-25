@@ -55,7 +55,7 @@ class MNISTNeuralNetwork:
 
         x: np.ndarray = input_
         for layer in self.layers:
-            x: np.ndarray = layer.forward(x)
+            x = layer.forward(x)
 
         return x
 
@@ -82,11 +82,11 @@ class MNISTNeuralNetwork:
             self._weight_velocities = []
             self._bias_velocities = []
             for layer in self.layers:
-                weights: np.ndarray
-                bias: np.ndarray
-                weights, bias = layer.get_params()
-                self._weight_velocities.append(np.zeros_like(weights))
-                self._bias_velocities.append(np.zeros_like(bias))
+                init_weights: np.ndarray
+                init_bias: np.ndarray
+                init_weights, init_bias = layer.get_params()
+                self._weight_velocities.append(np.zeros_like(init_weights))
+                self._bias_velocities.append(np.zeros_like(init_bias))
 
         for index, layer in enumerate(self.layers):
             weights: np.ndarray
@@ -97,12 +97,10 @@ class MNISTNeuralNetwork:
             grad_weights, grad_bias = layer.get_grads()
             weight_velocity: np.ndarray
             bias_velocity: np.ndarray
-            weight_velocity: np.ndarray = (
+            weight_velocity = (
                 momentum * self._weight_velocities[index] + grad_weights
             )
-            bias_velocity: np.ndarray = (
-                momentum * self._bias_velocities[index] + grad_bias
-            )
+            bias_velocity = momentum * self._bias_velocities[index] + grad_bias
             self._weight_velocities[index] = weight_velocity
             self._bias_velocities[index] = bias_velocity
             weights -= learning_rate * weight_velocity
@@ -134,15 +132,16 @@ class MNISTNeuralNetwork:
     def predict(self, x: np.ndarray) -> np.ndarray:
         """Predict class labels."""
         predictions: np.ndarray = self.forward(x)
-        return np.argmax(predictions, axis=1)
+        return np.asarray(np.argmax(predictions, axis=1))
 
     def evaluate(self, x: np.ndarray, y: np.ndarray) -> float:
         """Evaluate accuracy on a dataset."""
         predictions: np.ndarray = self.predict(x)
 
         # Convert one-hot encoded labels to class indices if needed
+        labels: np.ndarray = y
         if len(y.shape) == 2:
-            y: np.ndarray = np.argmax(y, axis=1)
+            labels = np.asarray(np.argmax(y, axis=1))
 
-        accuracy: float = np.mean(predictions == y)
+        accuracy: float = float(np.mean(predictions == labels))
         return accuracy

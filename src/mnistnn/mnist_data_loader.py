@@ -1,8 +1,30 @@
 """Load images and labels from MNIST binary data files."""
 
 import os
+from typing import TypedDict
 
 import numpy as np  # linear algebra
+
+
+class MNISTImagesInfo(TypedDict):
+    """Image-file metadata and pixel array loaded from an MNIST file."""
+
+    type: str
+    num_images: int
+    rows: int
+    cols: int
+    images: np.ndarray
+
+
+class MNISTLabelsInfo(TypedDict):
+    """Label-file metadata and label array loaded from an MNIST file."""
+
+    type: str
+    num_labels: int
+    labels: np.ndarray
+
+
+MNISTSplitInfo = tuple[MNISTImagesInfo, MNISTLabelsInfo]
 
 
 #
@@ -29,21 +51,15 @@ class MNISTDataLoader:
         # Check if file paths exist
         self._validate_file_paths()
         # Store Training data
-        self.training_info: tuple[
-            dict[str, str | int | np.ndarray],
-            dict[str, str | int | np.ndarray],
-        ] = self._load_train_data()
+        self.training_info: MNISTSplitInfo = self._load_train_data()
         # Store Test data
-        self.test_info: tuple[
-            dict[str, str | int | np.ndarray],
-            dict[str, str | int | np.ndarray],
-        ] = self._load_test_data()
+        self.test_info: MNISTSplitInfo = self._load_test_data()
 
     """Validate the existence of the MNIST data files."""
 
     # Private method to validate file paths
     # Do not call this method directly from outside the class
-    def _validate_file_paths(self):
+    def _validate_file_paths(self) -> None:
         """Validate file existence: training files first, then test files."""
         # Training first
         for name, path in self.training_input.items():
@@ -63,9 +79,7 @@ class MNISTDataLoader:
 
     # Private method to validate file paths
     # Do not call this method directly from outside the class
-    def _read_labels(
-        self, labels_filepath: str
-    ) -> dict[str, str | int | np.ndarray]:
+    def _read_labels(self, labels_filepath: str) -> MNISTLabelsInfo:
         labels: list[int] = []
         with open(labels_filepath, "rb") as f:
             # Read and validate magic number header
@@ -79,14 +93,14 @@ class MNISTDataLoader:
             # Read label data, each label is a single digit between 0 and 9
             # that is stored as a single byte
             raw_bytes: bytes = f.read()
-            labels: list[int] = []
+            labels = []
             for byte in raw_bytes:
                 labels.append(int(byte))
             if any(label < 0 or label > 9 for label in labels):
                 raise ValueError("Labels must be digits between 0 and 9")
             if len(labels) != num_labels:
                 raise ValueError("Label count does not match header")
-        labels_dict: dict[str, str | int | np.ndarray] = {
+        labels_dict: MNISTLabelsInfo = {
             "type": "labels",
             "num_labels": num_labels,
             "labels": np.array(labels, dtype=np.uint8),
@@ -97,9 +111,7 @@ class MNISTDataLoader:
 
     # Private method to validate file paths
     # Do not call this method directly from outside the class
-    def _read_images(
-        self, images_filepath: str
-    ) -> dict[str, str | int | np.ndarray]:
+    def _read_images(self, images_filepath: str) -> MNISTImagesInfo:
         images: list[np.ndarray] = []
         with open(images_filepath, "rb") as f:
             # Read and validate magic number header
@@ -134,7 +146,7 @@ class MNISTDataLoader:
                     row: list[int] = flat[r * cols : (r + 1) * cols]
                     image.append(row)
                 images.append(np.array(image))
-        images_dict: dict[str, str | int | np.ndarray] = {
+        images_dict: MNISTImagesInfo = {
             "type": "images",
             "num_images": num_images,
             "rows": rows,
@@ -149,16 +161,9 @@ class MNISTDataLoader:
     # Do not call this method directly from outside the class
     def _read_images_labels(
         self, images_filepath: str, labels_filepath: str
-    ) -> tuple[
-        dict[str, str | int | np.ndarray],
-        dict[str, str | int | np.ndarray],
-    ]:
-        images_dict: dict[str, str | int | np.ndarray] = self._read_images(
-            images_filepath
-        )
-        labels_dict: dict[str, str | int | np.ndarray] = self._read_labels(
-            labels_filepath
-        )
+    ) -> MNISTSplitInfo:
+        images_dict: MNISTImagesInfo = self._read_images(images_filepath)
+        labels_dict: MNISTLabelsInfo = self._read_labels(labels_filepath)
         if images_dict["num_images"] != labels_dict["num_labels"]:
             raise ValueError(
                 "Number of images does not match number of labels"
@@ -171,10 +176,7 @@ class MNISTDataLoader:
     # Do not call this method directly from outside the class
     def _load_train_data(
         self,
-    ) -> tuple[
-        dict[str, str | int | np.ndarray],
-        dict[str, str | int | np.ndarray],
-    ]:
+    ) -> MNISTSplitInfo:
         return self._read_images_labels(
             self.training_input['images_path'],
             self.training_input['labels_path'],
@@ -186,10 +188,7 @@ class MNISTDataLoader:
     # Do not call this method directly from outside the class
     def _load_test_data(
         self,
-    ) -> tuple[
-        dict[str, str | int | np.ndarray],
-        dict[str, str | int | np.ndarray],
-    ]:
+    ) -> MNISTSplitInfo:
         return self._read_images_labels(
             self.test_input['images_path'], self.test_input['labels_path']
         )
@@ -198,15 +197,6 @@ class MNISTDataLoader:
 
     def show_data(
         self,
-    ) -> tuple[
-        tuple[
-            dict[str, str | int | np.ndarray],
-            dict[str, str | int | np.ndarray],
-        ],
-        tuple[
-            dict[str, str | int | np.ndarray],
-            dict[str, str | int | np.ndarray],
-        ],
-    ]:
+    ) -> tuple[MNISTSplitInfo, MNISTSplitInfo]:
         """Return the loaded training and test data."""
         return (self.training_info, self.test_info)

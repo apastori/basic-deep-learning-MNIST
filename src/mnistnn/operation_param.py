@@ -14,7 +14,8 @@ class ParamOperation(Operation):
     def __init__(self, param: np.ndarray) -> None:
         """Initialize the parameterized operation."""
         super().__init__()
-        self.param = param
+        self.param: np.ndarray = param
+        self.param_grad: np.ndarray | None = None
 
     def backward(self, output_grad: np.ndarray) -> np.ndarray:
         """Call self._input_grad and self._param_grad.

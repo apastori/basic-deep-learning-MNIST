@@ -37,15 +37,16 @@ class MNISTVisualizer:
         title: str = "MNIST Images Grid",
     ) -> None:
         """Plot multiple MNIST images in a grid."""
-        num_images: int = min(num_images, len(images))
-        grid_size: int = int(np.ceil(np.sqrt(num_images)))
+        display_count: int = min(num_images, len(images))
+        grid_size: int = int(np.ceil(np.sqrt(display_count)))
         fig: matplotlib.figure.Figure
         axes: np.ndarray
+        flat_axes: np.ndarray
         fig, axes = plt.subplots(grid_size, grid_size, figsize=(10, 10))
-        axes: np.ndarray = axes.flatten()
+        flat_axes = np.asarray(axes).reshape(-1)
 
-        for i, ax in enumerate(axes):
-            if i < num_images:
+        for i, ax in enumerate(flat_axes):
+            if i < display_count:
                 ax.imshow(images[i], cmap="gray")
                 ax.set_title(f"Label: {labels[i]}")
                 ax.axis("off")
