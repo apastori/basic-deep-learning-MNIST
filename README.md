@@ -1,6 +1,6 @@
-# Basic Python Boilerplate
+# Basic Deep Learning MNIST
 
-This is a basic Python project boilerplate that includes a set of tools to ensure code quality and consistency. It comes pre-configured with Black for code formatting, Ruff for linting, and MyPy for static type checking.
+From-scratch NumPy neural network for MNIST digit classification, plus Black, Ruff, and MyPy for code quality.
 
 ## Tooling
 
@@ -30,12 +30,75 @@ A `Makefile` is included to provide a simple and familiar interface for common c
 
 [Invoke](https://www.pyinvoke.org/) is a Python task execution tool. The `tasks.py` file defines a set of tasks that can be run from the command line. This allows for more complex logic than a `Makefile` and is written in Python. You can see the available tasks by running `invoke --list`.
 
+## Train the neural network
+
+Install dependencies first (`invoke install` or `make install`). Run every command from the project root. The package lives under `src/`, so Python needs `PYTHONPATH=src` (the Invoke and Make targets set this for you).
+
+All of the commands below run `python -m mnistnn`, which calls `train_mnist()` with these defaults:
+
+- 15 epochs
+- batch size 64
+- learning rate 0.05 (decayed by 0.9 after each epoch)
+- SGD momentum 0.9
+- pixel values scaled to `[-0.5, 0.5]`
+- sample plots enabled (`visualize=True`)
+
+Training progress is written to `log/mnist-training.log`.
+
+### Invoke
+
+Works the same in bash, PowerShell, and cmd:
+
+```text
+invoke train
+```
+
+### Make
+
+Use this in bash, Git Bash, or WSL. The Makefile uses Unix `PYTHONPATH=src python -m mnistnn`, so it is not for stock Windows cmd or PowerShell unless `make` is installed.
+
+```bash
+make train
+```
+
+### Python interpreter
+
+Set `PYTHONPATH` in the current shell, then run the module.
+
+bash, Git Bash, or WSL:
+
+```bash
+export PYTHONPATH=src
+python -m mnistnn
+```
+
+PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m mnistnn
+```
+
+cmd:
+
+```bat
+set PYTHONPATH=src
+python -m mnistnn
+```
+
+To train without plot windows, set `PYTHONPATH` as above, then:
+
+```text
+python -c "from mnistnn.train_mnist import train_mnist; train_mnist(visualize=False)"
+```
+
 ## Available Commands
 
 You can use either `make` or `invoke` to run the following commands:
 
 | Command | Makefile | Invoke | Description |
 |---|---|---|---|
+| **Train Network** | `make train` | `invoke train` | Trains the MNIST network (`python -m mnistnn`). |
 | **Format Code** | `make format` | `invoke format` | Formats the code using Black. |
 | **Check Formatting** | `make format-check` | `invoke format-check` | Checks if the code is formatted correctly without making changes. |
 | **Lint Code** | `make lint` | `invoke lint` | Lints the code with Ruff to find potential issues. |
