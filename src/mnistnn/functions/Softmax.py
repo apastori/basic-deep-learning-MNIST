@@ -3,6 +3,7 @@
 import numpy as np
 
 from mnistnn.operation import Operation
+from mnistnn.utils.asarray import as_array
 
 
 class Softmax(Operation):
@@ -16,7 +17,7 @@ class Softmax(Operation):
             raise ValueError("Input to Softmax must be a 2D array")
         exp_input = np.exp(self.input_)
         # Output already saved in self.output through forward function in Operation class
-        return exp_input / np.sum(exp_input, axis=1, keepdims=True)
+        return as_array(exp_input / np.sum(exp_input, axis=1, keepdims=True))
 
     """Backward Pass during Training"""
 
@@ -28,6 +29,7 @@ class Softmax(Operation):
             )
         probabilities = self.output
 
-        return probabilities * (
-            grad - np.sum(grad * probabilities, axis=1, keepdims=True)
+        return as_array(
+            probabilities
+            * (grad - np.sum(grad * probabilities, axis=1, keepdims=True))
         )

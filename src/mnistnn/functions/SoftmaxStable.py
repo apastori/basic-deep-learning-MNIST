@@ -3,6 +3,7 @@
 import numpy as np
 
 from mnistnn.operation import Operation
+from mnistnn.utils.asarray import as_array
 
 
 class SoftmaxStable(Operation):
@@ -24,10 +25,13 @@ class SoftmaxStable(Operation):
 
         exp_input = np.exp(shifted_input)
 
-        return exp_input / np.sum(
-            exp_input,
-            axis=1,
-            keepdims=True,
+        return as_array(
+            exp_input
+            / np.sum(
+                exp_input,
+                axis=1,
+                keepdims=True,
+            )
         )
 
     """Backward Pass during Training"""
@@ -40,11 +44,14 @@ class SoftmaxStable(Operation):
 
         probabilities = self.output
 
-        return probabilities * (
-            grad
-            - np.sum(
-                grad * probabilities,
-                axis=1,
-                keepdims=True,
+        return as_array(
+            probabilities
+            * (
+                grad
+                - np.sum(
+                    grad * probabilities,
+                    axis=1,
+                    keepdims=True,
+                )
             )
         )

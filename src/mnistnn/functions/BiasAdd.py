@@ -3,6 +3,7 @@
 import numpy as np
 
 from mnistnn.operation_param import ParamOperation
+from mnistnn.utils.asarray import as_array
 
 
 class BiasAdd(ParamOperation):
@@ -18,13 +19,15 @@ class BiasAdd(ParamOperation):
 
     def _output(self) -> np.ndarray:
         """Compute Output."""
-        return self.input_ + self.param
+        return as_array(self.require_input() + self.param)
 
     def _input_grad(self, grad: np.ndarray) -> np.ndarray:
         """Compute input gradient."""
-        return np.ones_like(self.input_) * grad
+        return as_array(np.ones_like(self.require_input()) * grad)
 
     def _param_grad(self, grad: np.ndarray) -> np.ndarray:
         """Compute parameter gradient."""
         param_grad: np.ndarray = np.ones_like(self.param) * grad
-        return np.sum(param_grad, axis=0).reshape(1, param_grad.shape[1])
+        return as_array(
+            np.sum(param_grad, axis=0).reshape(1, param_grad.shape[1])
+        )

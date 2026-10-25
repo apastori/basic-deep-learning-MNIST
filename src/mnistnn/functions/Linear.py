@@ -2,7 +2,8 @@
 
 import numpy as np
 
-from mnistnn.operation import Operation  # type: ignore # Corrected module path
+from mnistnn.operation import Operation
+from mnistnn.utils.asarray import as_array
 
 
 class Linear(Operation):
@@ -21,11 +22,13 @@ class Linear(Operation):
 
     def _output(self) -> np.ndarray:
         ## output value of this function is stored in output through forward function in Operation class
-        return np.dot(self.input_, self.weights) + self.bias
+        return as_array(np.dot(self.require_input(), self.weights) + self.bias)
 
     """Backward Pass during Training"""
 
     def _input_grad(self, grad: np.ndarray) -> np.ndarray:
-        self.grad_weights: np.ndarray = np.dot(self.input_.T, grad)
+        self.grad_weights: np.ndarray = as_array(
+            np.dot(self.require_input().T, grad)
+        )
         self.grad_bias: np.ndarray = np.sum(grad, axis=0, keepdims=True)
-        return np.dot(grad, self.weights.T)
+        return as_array(np.dot(grad, self.weights.T))
