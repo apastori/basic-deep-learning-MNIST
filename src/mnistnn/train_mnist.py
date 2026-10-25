@@ -10,7 +10,13 @@ import numpy as np
 import numpy.typing as npt
 
 from mnistnn.log_config import configure_file_logging
-from mnistnn.mnist_data_loader import MNISTDataLoader as MNISTDataLoader
+from mnistnn.mnist_data_loader import (
+    MNISTDataLoader as MNISTDataLoader,
+)
+from mnistnn.mnist_data_loader import (
+    MNISTImagesInfo,
+    MNISTLabelsInfo,
+)
 from mnistnn.visualize_mnist import visualize_mnist
 
 if TYPE_CHECKING:
@@ -80,18 +86,10 @@ def train_mnist(
     data_loader: MNISTDataLoader = MNISTDataLoader(
         dict_config_train, dict_config_test
     )
-    train_images_info: dict[str, str | int | np.ndarray] = (
-        data_loader.training_info[0]
-    )
-    train_labels_info: dict[str, str | int | np.ndarray] = (
-        data_loader.training_info[1]
-    )
-    test_images_info: dict[str, str | int | np.ndarray] = (
-        data_loader.test_info[0]
-    )
-    test_labels_info: dict[str, str | int | np.ndarray] = (
-        data_loader.test_info[1]
-    )
+    train_images_info: MNISTImagesInfo = data_loader.training_info[0]
+    train_labels_info: MNISTLabelsInfo = data_loader.training_info[1]
+    test_images_info: MNISTImagesInfo = data_loader.test_info[0]
+    test_labels_info: MNISTLabelsInfo = data_loader.test_info[1]
     # The image data is stored as a NumPy array of shape (num_images, rows, cols) 3D
     # The label data is stored as a NumPy array of shape (num_labels,) 1D
     train_images_value: np.ndarray = train_images_info['images']
