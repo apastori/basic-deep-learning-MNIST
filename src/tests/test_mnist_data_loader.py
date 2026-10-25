@@ -1,12 +1,15 @@
 """Tests for MNIST Data Loader class."""
 
-from typing import Any
-
 import numpy as np
 import pytest
 
 from mnistnn.data_config import dict_config_test, dict_config_train
-from mnistnn.mnist_data_loader import MNISTDataLoader
+from mnistnn.mnist_data_loader import (
+    MNISTDataLoader,
+    MNISTImagesInfo,
+    MNISTLabelsInfo,
+    MNISTSplitInfo,
+)
 
 
 class TestMNISTDataLoader:
@@ -35,8 +38,8 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that training data has correct structure (images_dict, labels_dict)."""
-        training_images_dict: dict[str, Any]
-        training_labels_dict: dict[str, Any]
+        training_images_dict: MNISTImagesInfo
+        training_labels_dict: MNISTLabelsInfo
         training_images_dict, training_labels_dict = data_loader.training_info
 
         if not isinstance(training_images_dict, dict):
@@ -57,7 +60,7 @@ class TestMNISTDataLoader:
         """Test that training images file has correct magic number (2051)."""
         # Magic number validation happens during loading
         # If loading succeeds, the magic number was valid (2051)
-        training_images_dict: dict[str, Any]
+        training_images_dict: MNISTImagesInfo
         training_images_dict, _ = data_loader.training_info
         if training_images_dict['type'] != 'images':
             raise AssertionError(
@@ -71,7 +74,7 @@ class TestMNISTDataLoader:
         """Test that training labels file has correct magic number (2049)."""
         # Magic number validation happens during loading
         # If loading succeeds, the magic number was valid (2049)
-        training_labels_dict: dict[str, Any]
+        training_labels_dict: MNISTLabelsInfo
         _, training_labels_dict = data_loader.training_info
         if training_labels_dict['type'] != 'labels':
             raise AssertionError(
@@ -83,7 +86,7 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that number of training images matches header."""
-        training_images_dict: dict[str, Any]
+        training_images_dict: MNISTImagesInfo
         training_images_dict, _ = data_loader.training_info
         num_images: int = training_images_dict['num_images']
         images_array: np.ndarray = training_images_dict['images']
@@ -101,7 +104,7 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that number of training labels matches header."""
-        training_labels_dict: dict[str, Any]
+        training_labels_dict: MNISTLabelsInfo
         _, training_labels_dict = data_loader.training_info
         num_labels: int = training_labels_dict['num_labels']
         labels_array: np.ndarray = training_labels_dict['labels']
@@ -119,8 +122,8 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that number of training images equals number of labels."""
-        training_images_dict: dict[str, Any]
-        training_labels_dict: dict[str, Any]
+        training_images_dict: MNISTImagesInfo
+        training_labels_dict: MNISTLabelsInfo
         training_images_dict, training_labels_dict = data_loader.training_info
         num_images: int = training_images_dict['num_images']
         num_labels: int = training_labels_dict['num_labels']
@@ -134,7 +137,7 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that training images have correct dimensions (28x28)."""
-        training_images_dict: dict[str, Any]
+        training_images_dict: MNISTImagesInfo
         training_images_dict, _ = data_loader.training_info
         rows: int = training_images_dict['rows']
         cols: int = training_images_dict['cols']
@@ -149,7 +152,7 @@ class TestMNISTDataLoader:
 
     def test_training_image_shape(self, data_loader: MNISTDataLoader) -> None:
         """Test that each training image is 28x28."""
-        training_images_dict: dict[str, Any]
+        training_images_dict: MNISTImagesInfo
         training_images_dict, _ = data_loader.training_info
         images_array: np.ndarray = training_images_dict['images']
         for idx, image in enumerate(images_array):
@@ -164,7 +167,7 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that training labels are single digits (0-9)."""
-        training_labels_dict: dict[str, Any]
+        training_labels_dict: MNISTLabelsInfo
         _, training_labels_dict = data_loader.training_info
         labels_array: np.ndarray = training_labels_dict['labels']
         if not np.all(labels_array >= 0):
@@ -182,7 +185,7 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that training image pixels are valid grayscale values (0-255)."""
-        training_images_dict: dict[str, Any]
+        training_images_dict: MNISTImagesInfo
         training_images_dict, _ = data_loader.training_info
         images_array: np.ndarray = training_images_dict['images']
         if not np.all(images_array >= 0):
@@ -200,8 +203,8 @@ class TestMNISTDataLoader:
 
     def test_test_data_structure(self, data_loader: MNISTDataLoader) -> None:
         """Test that test data has correct structure (images_dict, labels_dict)."""
-        test_images_dict: dict[str, Any]
-        test_labels_dict: dict[str, Any]
+        test_images_dict: MNISTImagesInfo
+        test_labels_dict: MNISTLabelsInfo
         test_images_dict, test_labels_dict = data_loader.test_info
         if not isinstance(test_images_dict, dict):
             raise AssertionError(
@@ -220,7 +223,7 @@ class TestMNISTDataLoader:
         """Test that test images file has correct magic number (2051)."""
         # Magic number validation happens during loading
         # If loading succeeds, the magic number was valid (2051)
-        test_images_dict: dict[str, Any]
+        test_images_dict: MNISTImagesInfo
         test_images_dict, _ = data_loader.test_info
         if test_images_dict['type'] != 'images':
             raise AssertionError(
@@ -234,7 +237,7 @@ class TestMNISTDataLoader:
         """Test that test labels file has correct magic number (2049)."""
         # Magic number validation happens during loading
         # If loading succeeds, the magic number was valid (2049)
-        test_labels_dict: dict[str, Any]
+        test_labels_dict: MNISTLabelsInfo
         _, test_labels_dict = data_loader.test_info
         if test_labels_dict['type'] != 'labels':
             raise AssertionError(
@@ -246,7 +249,7 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that number of test images matches header."""
-        test_images_dict: dict[str, Any]
+        test_images_dict: MNISTImagesInfo
         test_images_dict, _ = data_loader.test_info
         num_images: int = test_images_dict['num_images']
         images_array: np.ndarray = test_images_dict['images']
@@ -264,7 +267,7 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that number of test labels matches header."""
-        test_labels_dict: dict[str, Any]
+        test_labels_dict: MNISTLabelsInfo
         _, test_labels_dict = data_loader.test_info
         num_labels: int = test_labels_dict['num_labels']
         labels_array: np.ndarray = test_labels_dict['labels']
@@ -282,8 +285,8 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that number of test images equals number of test labels."""
-        test_images_dict: dict[str, Any]
-        test_labels_dict: dict[str, Any]
+        test_images_dict: MNISTImagesInfo
+        test_labels_dict: MNISTLabelsInfo
         test_images_dict, test_labels_dict = data_loader.test_info
         num_images: int = test_images_dict['num_images']
         num_labels: int = test_labels_dict['num_labels']
@@ -295,7 +298,7 @@ class TestMNISTDataLoader:
 
     def test_test_image_dimensions(self, data_loader: MNISTDataLoader) -> None:
         """Test that test images have correct dimensions (28x28)."""
-        test_images_dict: dict[str, Any]
+        test_images_dict: MNISTImagesInfo
         test_images_dict, _ = data_loader.test_info
         rows: int = test_images_dict['rows']
         cols: int = test_images_dict['cols']
@@ -310,11 +313,10 @@ class TestMNISTDataLoader:
 
     def test_test_image_shape(self, data_loader: MNISTDataLoader) -> None:
         """Test that each test image is 28x28."""
-        test_images_dict: dict[str, Any]
+        test_images_dict: MNISTImagesInfo
         test_images_dict, _ = data_loader.test_info
         images_array: np.ndarray = test_images_dict['images']
         for idx, image in enumerate(images_array):
-            image = image  # type: np.ndarray
             if image.shape != (28, 28):
                 raise AssertionError(
                     f"Expected test image {idx} shape to be (28, 28), "
@@ -325,7 +327,7 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that test labels are single digits (0-9)."""
-        test_labels_dict: dict[str, Any]
+        test_labels_dict: MNISTLabelsInfo
         _, test_labels_dict = data_loader.test_info
         labels_array: np.ndarray = test_labels_dict['labels']
         if not np.all(labels_array >= 0):
@@ -343,7 +345,7 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that test image pixels are valid grayscale values (0-255)."""
-        test_images_dict: dict[str, Any]
+        test_images_dict: MNISTImagesInfo
         test_images_dict, _ = data_loader.test_info
         images_array: np.ndarray = test_images_dict['images']
         if not np.all(images_array >= 0):
@@ -363,8 +365,8 @@ class TestMNISTDataLoader:
         self, data_loader: MNISTDataLoader
     ) -> None:
         """Test that show_data returns both training and test data."""
-        training_info: tuple[dict[str, Any], dict[str, Any]]
-        test_info: tuple[dict[str, Any], dict[str, Any]]
+        training_info: MNISTSplitInfo
+        test_info: MNISTSplitInfo
         training_info, test_info = data_loader.show_data()
         if training_info is None:
             raise AssertionError("Expected training_info to not be None")

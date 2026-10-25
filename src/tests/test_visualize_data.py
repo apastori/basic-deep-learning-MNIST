@@ -4,7 +4,11 @@ import numpy as np
 import pytest
 
 from mnistnn.data_config import dict_config_test, dict_config_train
-from mnistnn.mnist_data_loader import MNISTDataLoader
+from mnistnn.mnist_data_loader import (
+    MNISTDataLoader,
+    MNISTImagesInfo,
+    MNISTLabelsInfo,
+)
 from mnistnn.mnist_visualizer import MNISTVisualizer
 
 
@@ -24,8 +28,8 @@ class TestMNISTVisualizer:
         self, data_loader: MNISTDataLoader
     ) -> tuple[np.ndarray, np.ndarray]:
         """Retrieve training images and labels."""
-        train_images: dict[str, str | int | np.ndarray]
-        train_labels: dict[str, str | int | np.ndarray]
+        train_images: MNISTImagesInfo
+        train_labels: MNISTLabelsInfo
         train_images, train_labels = data_loader.training_info
         images_array: np.ndarray = train_images["images"]
         labels_array: np.ndarray = train_labels["labels"]
