@@ -14,7 +14,7 @@ Evaluation metric is **top-1 accuracy on the official MNIST test set** (10,000 i
 | Epochs | 25 |
 | Wall time (CPU, approx.) | ~2 minutes |
 
-**How to read these numbers:** report the **final-epoch** test accuracy as the result for the model returned by `train_mnist()`. Peak-over-epochs is sometimes slightly higher but is not checkpointed unless you add that yourself.
+**How to read these numbers:** report the **final-epoch** test accuracy as the result for the trained model returned by `train_mnist()` (also saved to `models/mnist.npz`). Peak-over-epochs is sometimes slightly higher but only the final weights are saved.
 
 For context, a small fully connected NumPy MLP on MNIST commonly lands in the high 97% range. Small CNNs usually push past 99%; this project intentionally stays fully connected / NumPy-only (`784 → 128 → 64 → 10`).
 
@@ -61,6 +61,22 @@ All of the commands below run `python -m mnistnn`, which calls `train_mnist()` w
 - digit-safe train augmentation (±2 px shift, ±8° rotation, each ~50% chance)
 - pixel values scaled to `[-0.5, 0.5]`
 - sample plots enabled (`visualize=True`)
+
+Weights are saved to `models/mnist.npz` after a full training run. If that file already exists, the same train command loads it, skips training, and reports test accuracy. Weight files under `models/` are intended to be tracked by git.
+
+`models/mnist.npz` is a NumPy archive with one weights matrix and one bias row per layer (`784 → 128 → 64 → 10`):
+
+| Key | Shape |
+|---|---|
+| `weights_0` | `(784, 128)` |
+| `bias_0` | `(1, 128)` |
+| `weights_1` | `(128, 64)` |
+| `bias_1` | `(1, 64)` |
+| `weights_2` | `(64, 10)` |
+| `bias_2` | `(1, 10)` |
+
+If you want to train the model without using saved weights, just delete the files in the `models/` subdirectory, then the program
+is going to train the model again.
 
 Training progress is written to `log/mnist-training.log`.
 
